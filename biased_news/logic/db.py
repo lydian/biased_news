@@ -35,10 +35,10 @@ def add_media(media):
     return MEDIAS.insert_one(media)
 
 
-def get_media_selector(domain):
+def get_media(domain):
     row = MEDIAS.find_one({'domain': domain})
     if row:
-        return row['selector']
+        return row
 
 
 def add_query_keywords(keyword):

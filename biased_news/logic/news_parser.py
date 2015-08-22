@@ -7,7 +7,7 @@ import feedparser
 from pyquery import PyQuery as pq
 from lxml.html import HTMLParser, fromstring
 
-from biased_news.logic.db import get_media_selector
+from biased_news.logic.db import get_media
 from biased_news.logic.db import add_or_update_news_cluster
 
 
@@ -41,11 +41,15 @@ def get_news_link_in_cluster(cluster_link):
 
 def get_news_content(news_link):
     domain = urlparse(news_link).netloc
-    query_selector = get_media_selector(domain)
-    if query_selector:
-        content = pq(url=news_link)(query_selector)
+    media = get_media(domain)
+    if media:
+        content = pq(url=news_link)(media['selector'])
         content.remove('script')
-        return content.text()
+        content.remove('iframe')
+        content_text = content.text()
+        if 'encoding' in media:
+            content_text.decode('big5', 'strict').encode('utf8', 'strict')
+        return content_text
 
 
 class NewsCluster(object):
